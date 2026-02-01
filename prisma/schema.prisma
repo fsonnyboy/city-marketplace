@@ -67,7 +67,8 @@ model User {
   email         String?  @unique
   phone         String?  @unique
   passwordHash  String?
-  name          String
+  firstName     String
+  lastName      String
   avatarUrl     String?
   role          UserRole @default(USER)
 
