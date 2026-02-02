@@ -35,7 +35,8 @@ export const api = {
       fetcher<{
         user: {
           id: string;
-          name: string;
+          firstName: string;
+          lastName: string;
           email: string | null;
           cityId: string;
           avatarUrl: string | null;
@@ -43,7 +44,7 @@ export const api = {
         } | null;
       }>("/api/auth/me"),
     login: (body: { email: string; password: string }) =>
-      fetcher<{ user: { id: string; name: string; email: string | null; cityId: string } }>(
+      fetcher<{ user: { id: string; firstName: string; lastName: string; email: string | null; cityId: string } }>(
         "/api/auth/login",
         { method: "POST", body: JSON.stringify(body) }
       ),
@@ -55,11 +56,27 @@ export const api = {
       password: string;
       cityId: string;
     }) =>
-      fetcher<{ user: { id: string; name: string; email: string | null; cityId: string } }>(
+      fetcher<{ user: { id: string; firstName: string; lastName: string; email: string | null; cityId: string } }>(
         "/api/auth/signup",
         { method: "POST", body: JSON.stringify(body) }
       ),
     logout: () =>
       fetcher<{ success: boolean }>("/api/auth/logout", { method: "POST" }),
+  },
+  listings: {
+    list: (cityId: string) =>
+      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }[]>(`/api/listings?cityId=${cityId}`),
+  },
+  userListings: {
+    list: (userId: string) =>
+      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }[]>(`/api/user/listings?userId=${userId}`),
+    get: (listingId: string, userId: string) =>
+      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }>(`/api/user/listings/${listingId}?userId=${userId}`),
+    create: (body: { title: string; price: number; condition: string; status: string; categoryId: string; userId: string }) =>
+      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }>("/api/user/listings", { method: "POST", body: JSON.stringify(body) }),
+    update: (listingId: string, body: { title: string; price: number; condition: string; status: string; categoryId: string; userId: string }) =>
+      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }>(`/api/user/listings/${listingId}`, { method: "PUT", body: JSON.stringify(body) }),
+    delete: (listingId: string, userId: string) =>
+      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }>(`/api/user/listings/${listingId}?userId=${userId}`, { method: "DELETE" }),
   },
 };

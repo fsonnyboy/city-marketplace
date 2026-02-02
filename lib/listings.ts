@@ -1,3 +1,4 @@
+import { Condition } from "@/generated/prisma/client";
 import { prisma } from "./prisma";
 
 /**
@@ -38,7 +39,8 @@ export async function getListings({
       user: {
         select: {
           id: true,
-          name: true,
+          firstName: true,
+          lastName: true,
           avatarUrl: true,
           rating: true,
           ratingCount: true,
@@ -67,12 +69,142 @@ export async function getListingById(listingId: string, cityId: string) {
       user: {
         select: {
           id: true,
-          name: true,
+          firstName: true,
+          lastName: true,
           avatarUrl: true,
           rating: true,
           ratingCount: true,
         },
       },
     },
+  });
+}
+
+export async function getUserListings({
+  userId,
+  categoryId,
+  status = "ACTIVE",
+  limit = 20,
+  offset = 0,
+}: {
+  userId: string;
+  categoryId?: string;
+  status?: ListingStatus;
+  limit?: number;
+  offset?: number;
+}) {
+  return prisma.listing.findMany({
+    where: {
+      userId,
+      status,
+      ...(categoryId && { categoryId }),
+    },
+    include: {
+      images: true,
+      category: true,
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          avatarUrl: true,
+          rating: true,
+          ratingCount: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    skip: offset,
+  });
+}
+
+export async function getUserListingById(listingId: string, userId: string) {
+  return prisma.listing.findFirst({
+    where: {
+      id: listingId,
+      userId,
+    },
+    include: {
+      images: true,
+      category: true,
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          avatarUrl: true,
+          rating: true,
+          ratingCount: true,
+        },
+      },
+    },
+  });
+}
+
+export async function createUserListing(
+  body: { 
+    title: string;
+    description: string;
+    price: number;
+    negotiable: boolean;
+    condition: string;
+    status: string;
+    categoryId: string;
+    userId: string;
+    cityId: string;
+  }
+) {
+
+  return prisma.listing.create({
+    data: {
+      title: body.title,
+      description: body.description,
+      price: body.price,
+      negotiable: body.negotiable,
+      condition: body.condition as Condition,
+      status: body.status as ListingStatus,
+      categoryId: body.categoryId,
+      userId: body.userId,
+      cityId: body.cityId,
+    },
+  });
+}
+
+export async function updateUserListing(
+  listingId: string, 
+  body: { 
+    title: string;
+    description: string;
+    price: number;
+    negotiable: boolean;
+    condition: string;
+    status: string;
+    categoryId: string;
+    userId: string;
+    cityId: string;
+  },
+) {
+
+  return prisma.listing.update({
+    where: { id: listingId },
+    data: {
+      title: body.title,
+      description: body.description,
+      price: body.price,
+      negotiable: body.negotiable,
+      condition: body.condition as Condition,
+      status: body.status as ListingStatus,
+      categoryId: body.categoryId,
+      userId: body.userId,
+      cityId: body.cityId,
+    },
+  });
+}
+
+export async function deleteUserListing(listingId: string, userId: string) {
+
+  return prisma.listing.delete({
+    where: { id: listingId },
   });
 }

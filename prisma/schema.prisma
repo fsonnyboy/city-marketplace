@@ -80,6 +80,7 @@ model User {
   ratingCount   Int      @default(0)
 
   listings      Listing[]
+  listingViews  ListingView[]
   messagesSent  Message[] @relation("SentMessages")
   messagesRecv  Message[] @relation("ReceivedMessages")
   reports       Report[]
@@ -134,11 +135,10 @@ model Listing {
   category    Category      @relation(fields: [categoryId], references: [id])
 
   images      ListingImage[]
+  views       ListingView[]
   boost       Boost?
   messages    Message[]
   reports     Report[]
-
-  views       Int           @default(0)
 
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -154,6 +154,24 @@ model ListingImage {
 
   listingId String
   listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model ListingView {
+  id          String   @id @default(uuid())
+  
+  listingId   String
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  // Optional: Track which user viewed the listing
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Timestamp
+  viewedAt    DateTime @default(now())
+  
+  @@index([listingId])
+  @@index([userId])
+  @@index([viewedAt])
 }
 
 //////////////////////
