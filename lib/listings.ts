@@ -100,8 +100,12 @@ export async function getUserListings({
       ...(categoryId && { categoryId }),
     },
     include: {
-      images: true,
-      category: true,
+      images: { 
+        select: { id: true, url: true }
+      },
+      category: {
+        select: { id: true, name: true }
+      },
       user: {
         select: {
           id: true,
@@ -112,6 +116,21 @@ export async function getUserListings({
           ratingCount: true,
         },
       },
+      boost: {
+        select: {
+          plan: true,
+          endsAt: true
+        }
+      },
+      city: {
+        select: { id: true, name: true }
+      },
+      _count: {
+        select: {
+          reports: true,
+          views: true
+        }
+      }
     },
     orderBy: { createdAt: "desc" },
     take: limit,
@@ -126,8 +145,12 @@ export async function getUserListingById(listingId: string, userId: string) {
       userId,
     },
     include: {
-      images: true,
-      category: true,
+      images: { 
+        select: { id: true, url: true }
+      },
+      category: {
+        select: { id: true, name: true }
+      },
       user: {
         select: {
           id: true,

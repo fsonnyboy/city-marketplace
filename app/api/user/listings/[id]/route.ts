@@ -31,6 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     try {
       const listing = await getUserListingById(id, user.id);
+
       return NextResponse.json(listing);
     } catch (error) {
       console.error("Failed to fetch listing:", error);
@@ -44,17 +45,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export  async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string}>}) {
     const { id } = await params;
     const body = await request.json();
-
-    const user = await getUser(body.userId);
     
-    if (!user) {
+    if (!body.userId) {
         return NextResponse.json(
-            { error: "User not found" },
-            { status: 404 }
+            { error: "User is required" },
+            { status: 400 }
         );
     }
 
-    const listing = await getUserListingById(id, user.id)
+    const listing = await getUserListingById(id, body.userId)
 
     if (!listing) {
         return NextResponse.json(
@@ -63,7 +62,7 @@ export  async function PUT(request: NextRequest, { params }: { params: Promise<{
         );
     }
 
-    if (listing.cityId !== user.cityId) {
+    if (listing.cityId !== body.cityId) {
         return NextResponse.json(
             { error: "Listing does not belong to user's city" },
             { status: 500 }
@@ -71,7 +70,7 @@ export  async function PUT(request: NextRequest, { params }: { params: Promise<{
     }
 
     try {
-        const updatedListing = await updateUserListing(listing.id, {...body, userId: user.id, cityId: user.cityId })
+        const updatedListing = await updateUserListing(listing.id, body)
         return NextResponse.json(updatedListing)
     } catch (error) {
         console.error("Failed to update listing:", error);

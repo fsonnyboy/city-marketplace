@@ -47,17 +47,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  const user = await getUser(body.userId);
   
-  if (!user) {
+  if (!body.userId) {
     return NextResponse.json(
-      { error: "User not found" },
-      { status: 404 }
+      { error: "User is required" },
+      { status: 400 }
     );
   }
 
   try {
-    const listing = await createUserListing({ ...body, userId: user.id });
+    const listing = await createUserListing(body);
     return NextResponse.json(listing);
   } catch (error) {
     console.error("Failed to create listing:", error);

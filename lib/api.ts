@@ -67,16 +67,67 @@ export const api = {
     list: (cityId: string) =>
       fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }[]>(`/api/listings?cityId=${cityId}`),
   },
+  categories: {
+    list: () => fetcher<{ id: string; name: string; slug: string }[]>("/api/category"),
+  },
   userListings: {
     list: (userId: string) =>
-      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }[]>(`/api/user/listings?userId=${userId}`),
+      fetcher<{ 
+        id: string;
+        title: string;
+        description: string;
+        price: number;
+        negotiable: boolean;
+        condition: "NEW" | "USED";
+        status: "ACTIVE" | "SOLD" | "EXPIRED" | "REMOVED";
+        createdAt: Date;
+        images: { id: string; url: string }[];
+        category: { id: string; name: string };
+        city: { id: string; name: string };
+        _count?: {
+          reports: number;
+          views: number;
+        };
+        boost?: {
+          plan: string;
+          endsAt: Date;
+        } | null; }[]>(`/api/user/listings?userId=${userId}`),
     get: (listingId: string, userId: string) =>
-      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }>(`/api/user/listings/${listingId}?userId=${userId}`),
-    create: (body: { title: string; price: number; condition: string; status: string; categoryId: string; userId: string }) =>
-      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }>("/api/user/listings", { method: "POST", body: JSON.stringify(body) }),
-    update: (listingId: string, body: { title: string; price: number; condition: string; status: string; categoryId: string; userId: string }) =>
-      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }>(`/api/user/listings/${listingId}`, { method: "PUT", body: JSON.stringify(body) }),
-    delete: (listingId: string, userId: string) =>
-      fetcher<{ id: string; title: string; price: number; condition: string; status: string; category: { id: string; name: string; slug: string }; user: { id: string; firstName: string; lastName: string; avatarUrl: string | null; rating: number; ratingCount: number } }>(`/api/user/listings/${listingId}?userId=${userId}`, { method: "DELETE" }),
+      fetcher<{ 
+        id: string;
+        title: string;
+        description: string;
+        price: number;
+        negotiable: boolean;
+        condition: "NEW" | "USED";
+        status: "ACTIVE" | "SOLD" | "EXPIRED" | "REMOVED";
+        images: { id: string; url: string }[];
+        category: { id: string; name: string }; }>(`/api/user/listings/${listingId}?userId=${userId}`),
+    create: (body: { 
+      title: string;
+      description: string;
+      price: number;
+      negotiable: boolean;
+      condition: "NEW" | "USED";
+      status: "ACTIVE" | "SOLD" | "EXPIRED" | "REMOVED";
+      categoryId: string;
+      userId: string;
+      cityId: string
+    }) =>
+      fetcher<{ id: string; title: string; price: number; condition: "NEW" | "USED"; status: "ACTIVE" | "SOLD" | "EXPIRED" | "REMOVED"; category: { id: string; name: string; slug: string } }>("/api/user/listings", { method: "POST", body: JSON.stringify(body) }),
+    update: (listingId: string, body: { 
+      title: string;
+      description: string;
+      price: number;
+      negotiable: boolean;
+      condition: "NEW" | "USED";
+      status: "ACTIVE" | "SOLD" | "EXPIRED" | "REMOVED";
+      categoryId: string;
+      userId: string;
+      cityId: string;
+    }) =>
+      fetcher<{ id: string; title: string; price: number; condition: "NEW" | "USED"; status: "ACTIVE" | "SOLD" | "EXPIRED" | "REMOVED"; category: { id: string; name: string; slug: string } }>(`/api/user/listings/${listingId}`, { method: "PUT", body: JSON.stringify(body) }),
+    delete: (listingId: string) =>
+      fetcher<{ id: string; title: string; price: number; condition: "NEW" | "USED"; status: "ACTIVE" | "SOLD" | "EXPIRED" | "REMOVED"; category: { id: string; name: string; slug: string } }>(`/api/user/listings/${listingId}`, { method: "DELETE" }),
   },
 };

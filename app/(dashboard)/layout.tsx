@@ -57,7 +57,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="max-h-screen overflow-hidden">
       <Sidebar>
         <SidebarHeader className="border-b border-sidebar-border">
           <Link
@@ -103,7 +103,7 @@ export default function DashboardLayout({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex-1 overflow-auto p-6"
+          className="flex-1 overflow-auto"
         >
           {children}
         </motion.main>

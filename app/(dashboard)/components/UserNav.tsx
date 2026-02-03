@@ -21,7 +21,7 @@ export function UserNav() {
   if (isLoading || !data?.user) return null;
 
   const user = data.user;
-  const initials = user.name
+  const initials = user.firstName
     .split(" ")
     .map((n) => n[0])
     .join("")
@@ -36,7 +36,7 @@ export function UserNav() {
           aria-label="User menu"
         >
           <Avatar size="default" className="h-8 w-8 cursor-pointer">
-            <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
+            <AvatarImage src={user.avatarUrl ?? undefined} alt={user.firstName} />
             <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
               {initials}
             </AvatarFallback>
@@ -46,7 +46,7 @@ export function UserNav() {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium">{user.name}</p>
+            <p className="text-sm font-medium">{`${user.firstName} ${user.lastName}`}</p>
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
