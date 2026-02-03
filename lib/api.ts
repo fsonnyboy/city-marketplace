@@ -27,8 +27,6 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
 export const api = {
   cities: {
     list: () => fetcher<{ id: string; name: string; slug: string }[]>("/api/cities"),
-    get: (slug: string) =>
-      fetcher<{ id: string; name: string; slug: string }>(`/api/cities/${slug}`),
   },
   auth: {
     me: () =>

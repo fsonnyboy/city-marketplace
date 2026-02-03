@@ -1,22 +1,9 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getCities } from "@/lib/city";
 
-/**
- * GET /api/cities
- * Returns active cities for marketplace selection.
- * Used to resolve city slug/id when scoping listings.
- */
 export async function GET() {
   try {
-    const cities = await prisma.city.findMany({
-      where: { isActive: true },
-      orderBy: { name: "asc" },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-      },
-    });
+    const cities = getCities()
     return NextResponse.json(cities);
   } catch (error) {
     console.error("Failed to fetch cities:", error);
