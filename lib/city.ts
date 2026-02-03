@@ -11,3 +11,9 @@ export async function getCities() {
         },
     });
 }
+
+export async function getCity(id: string) {
+    return await prisma.city.findFirst({
+        where: { id, isActive: true },
+    });
+}

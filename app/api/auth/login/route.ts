@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword, createSession } from "@/lib/auth";
+import { getUserByEmail } from "@/lib/user";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -23,18 +24,7 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = parsed.data;
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        cityId: true,
-        passwordHash: true,
-        city: { select: { id: true, name: true, slug: true } },
-      },
-    });
+    const user = await getUserByEmail(email)
 
     if (!user || !user.passwordHash) {
       return NextResponse.json(

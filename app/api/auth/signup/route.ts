@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
+import { createUSer, getUserByEmail, getUserByPhone } from "@/lib/user";
+import { getCity } from "@/lib/city";
 
 function normalizePhone(value: string): string {
   return value.replace(/\D/g, "");
@@ -35,9 +36,8 @@ export async function POST(request: NextRequest) {
     const { firstName, lastName, email, phone, password, cityId } = parsed.data;
     const normalizedPhone = normalizePhone(phone);
 
-    const existingByEmail = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingByEmail = await getUserByEmail(email)
+
     if (existingByEmail) {
       return NextResponse.json(
         { error: "An account with this email already exists" },
@@ -45,9 +45,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingByPhone = await prisma.user.findUnique({
-      where: { phone: normalizedPhone },
-    });
+    const existingByPhone = await getUserByPhone(phone)
+
     if (existingByPhone) {
       return NextResponse.json(
         { error: "An account with this phone number already exists" },
@@ -55,9 +54,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const city = await prisma.city.findFirst({
-      where: { id: cityId, isActive: true },
-    });
+    const city = await getCity(cityId)
 
     if (!city) {
       return NextResponse.json(
@@ -68,23 +65,7 @@ export async function POST(request: NextRequest) {
 
     const passwordHash = await hashPassword(password);
 
-    const user = await prisma.user.create({
-      data: {
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        email,
-        phone: normalizedPhone,
-        passwordHash,
-        cityId,
-      },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        cityId: true,
-      },
-    });
+    const user = await createUSer(firstName, lastName, email, phone, passwordHash, cityId)
 
     const displayName = `${user.firstName} ${user.lastName}`;
     await createSession({
